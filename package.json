@@ -1,0 +1,33 @@
+{
+  "name": "backend_expense_tracker",
+  "version": "1.0.0",
+  "description": "\"Expense Tracker backend\"",
+  "main": "app.js",
+  "author": "Pratik",
+  "license": "ISC",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "start-server": "node app.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.16.3",
+    "express-handlebars": "^7.1.2",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^3.1.2",
+    "mysql2": "^1.7.0",
+    "pg": "^8.11.3",
+    "pug": "^3.0.2",
+    "razorpay": "^2.9.2",
+    "sequelize": "^6.6.2",
+    "sib-api-v3-sdk": "^8.5.0",
+    "uuid": "^9.0.1"
+  }
+}
