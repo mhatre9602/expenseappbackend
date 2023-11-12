@@ -5,15 +5,18 @@ const {
 } = require("@aws-sdk/client-s3");
 const moment = require("moment");
 
-const IPFS_GATEWAY_BASE_URL = "https://ipfs.filebase.io/ipfs/";
+const IPFS_GATEWAY_BASE_URL = "https://api.filebase.io/ipfs";
 
 let CID = null;
 
 const S3_CONFIG = {
-  AWS_BUCKET_NAME: process?.env?.FILEBASE_AWS_BUCKET_NAME,
-  AWS_ACCESS_KEY: process?.env?.FILEBASE_AWS_ACCESS_KEY || "",
-  AWS_SECRET_KEY: process?.env?.FILEBASE_AWS_SECRET_KEY || "",
-  AWS_REGION: process?.env?.FILEBASE_AWS_REGION || "",
+  AWS_BUCKET_NAME: "pm-reports",
+  AWS_ACCESS_KEY:
+    process?.env?.FILEBASE_AWS_ACCESS_KEY || "2158853E0EAEFA545EE1",
+  AWS_SECRET_KEY:
+    process?.env?.FILEBASE_AWS_SECRET_KEY ||
+    "Ifeo1jkSucF01kSyf7JJTlOibeAt2qe7cak8OTZF",
+  AWS_REGION: "us-east-1",
 };
 const client = new S3Client({
   credentials: {
@@ -21,7 +24,7 @@ const client = new S3Client({
     secretAccessKey: S3_CONFIG.AWS_SECRET_KEY,
   },
   region: S3_CONFIG.AWS_REGION,
-  endpoint: process?.env?.FILEBASE_ENDPOINT,
+  endpoint: "https://s3.filebase.com",
 });
 
 const S3Service = {
@@ -30,7 +33,7 @@ const S3Service = {
     const fileName = `report-${formatedDate}.csv`;
     const pc = new PutObjectCommand({
       Bucket: S3_CONFIG.AWS_BUCKET_NAME,
-      Key: `hf_stable_diffussion2/${fileName}`, //  `${YEAR}/${MONTH}/log-${formatedDate}.json`,
+      Key: `User_reports/${fileName}`, //  `${YEAR}/${MONTH}/log-${formatedDate}.json`,
       Body: data,
       // ContentType: "image/jpg",
     });

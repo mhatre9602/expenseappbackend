@@ -164,7 +164,17 @@ const downloadcsvfile = async (req, res) => {
       return res.status(500).json({ error: err, success: false });
     });
   // res.status(200).json({ expenses: data, success: true });
-  const csv = await converter.json2csv(data);
+  const reportCsv = [];
+  data.forEach((d) => {
+    reportCsv.push({
+      Date: moment(d.createdAt).format("DD-MMM-yyyy"),
+      User: d.userId,
+      Amount: d.expenseamount,
+      Description: d.description,
+      Category: d.category,
+    });
+  });
+  const csv = await converter.json2csv(reportCsv);
   const report = await s3Bucket.uploadFileToS3(csv);
   return res.send(report);
 };
