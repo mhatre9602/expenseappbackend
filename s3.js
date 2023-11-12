@@ -5,7 +5,7 @@ const {
 } = require("@aws-sdk/client-s3");
 const moment = require("moment");
 
-const IPFS_GATEWAY_BASE_URL = "https://api.filebase.io/ipfs";
+const IPFS_GATEWAY_BASE_URL = "https://ipfs.filebase.io/ipfs/";
 
 let CID = null;
 
