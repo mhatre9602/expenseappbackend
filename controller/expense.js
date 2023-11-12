@@ -2,6 +2,9 @@ const Expense = require("../models/expenses");
 const { Op } = require("sequelize");
 const User = require("../models/users");
 const sequelize = require("../util/database");
+const moment = require("moment");
+let converter = require("json-2-csv");
+const s3Bucket = require("../s3");
 
 const addexpense = async (req, res) => {
   const transact = await sequelize.transaction();
@@ -38,44 +41,63 @@ const addexpense = async (req, res) => {
   }
 };
 
-const getexpenses = (req, res) => {
+function reportsFilter(req) {
   let whereClause = {};
   if (req.query.type == "daily" && req.query.start.length) {
     whereClause = {
       ...whereClause,
       createdAt: {
         [Op.between]: [
-          req.query.start + " 00:00:00",
-          req.query.start + " 23:59:59",
+          moment(req.query.start).startOf("day").toISOString(),
+          moment(req.query.start).endOf("day").toISOString(),
         ],
       },
     };
   }
-  if (
-    req.query.type == "monthly" &&
-    req.query.start.length &&
-    req.query.end.length
-  ) {
+  //weekly reports
+  if (req.query.type == "weekly" && req.query.start.length) {
     whereClause = {
       ...whereClause,
       createdAt: {
         [Op.between]: [
-          req.query.start + " 00:00:00",
-          req.query.end + " 23:59:59",
+          moment(req.query.start).startOf("week").toISOString(),
+          moment(req.query.start).endOf("week").toISOString(),
         ],
       },
     };
   }
+  //monthly reports
+  if (req.query.type == "monthly" && req.query.start.length) {
+    whereClause = {
+      ...whereClause,
+      createdAt: {
+        [Op.between]: [
+          moment(req.query.start).startOf("month").toISOString(),
+          moment(req.query.start).endOf("month").toISOString(),
+        ],
+      },
+    };
+  }
+  return whereClause;
+}
+
+const getexpenses = async (req, res) => {
+  // console.log(req.user);
+  const whereClause = reportsFilter(req);
 
   //for normal expense reports
-  Expense.findAll({ where: { ...whereClause, userId: req.user.id } })
+  const data = await Expense.findAll({
+    where: { ...whereClause, userId: req.user.id },
+  })
     .then((expenses) => {
-      return res.status(200).json({ expenses, success: true });
+      return expenses;
     })
     .catch((err) => {
       console.log(err);
       return res.status(500).json({ error: err, success: false });
     });
+  res.status(200).json({ expenses: data, success: true });
+  return data;
 };
 
 const deleteexpense = async (req, res) => {
@@ -125,8 +147,31 @@ const deleteexpense = async (req, res) => {
   }
 };
 
+const downloadcsvfile = async (req, res) => {
+  // console.log(req.user);
+  const whereClause = reportsFilter(req);
+
+  //for normal expense reports
+  const data = await Expense.findAll({
+    where: { ...whereClause, userId: req.user.id },
+    attributes: ["expenseamount", "category", "description", "userId"],
+  })
+    .then((expenses) => {
+      return expenses;
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).json({ error: err, success: false });
+    });
+  // res.status(200).json({ expenses: data, success: true });
+  const csv = await converter.json2csv(data);
+  const report = await s3Bucket.uploadFileToS3(csv);
+  return res.send(report);
+};
+
 module.exports = {
   deleteexpense,
   getexpenses,
   addexpense,
+  downloadcsvfile,
 };

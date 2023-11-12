@@ -5,6 +5,7 @@ const Sib = require("sib-api-v3-sdk");
 require("dotenv").config();
 const ResetPassword = require("../models/forgotPasswordRequests");
 const { v4: uuidv4 } = require("uuid");
+const Expense = require("../models/expenses");
 
 function isstringinvalid(string) {
   if (string == undefined || string.length === 0) {
@@ -49,7 +50,7 @@ const login = async (req, res) => {
         .status(400)
         .json({ message: "Email id or password is missing ", success: false });
     }
-    // console.log(password);
+    console.log(password);
     const user = await User.findAll({ where: { email } });
     if (user.length > 0) {
       bcrypt.compare(password, user[0].password, (err, result) => {
@@ -141,7 +142,7 @@ const updatePasswordForm = async (req, res) => {
 
 const updatePassword = async (req, res) => {
   const userID = req.params.uuID;
-  // console.log(userID);
+
   const updateUser = await ResetPassword.findOne({ where: { id: userID } });
   await ResetPassword.update(
     { isActive: false },
@@ -150,9 +151,8 @@ const updatePassword = async (req, res) => {
     }
   );
   const updateId = updateUser.userId;
-  // console.log(updateId);
+
   const newPassword = req.body.password;
-  // console.log(newPassword);
 
   const saltrounds = 10;
   bcrypt.hash(newPassword, saltrounds, async (err, hash) => {
