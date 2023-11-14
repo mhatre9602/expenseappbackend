@@ -136,7 +136,7 @@ const updatePasswordForm = async (req, res) => {
   console.log(userID);
   console.log(requestActive);
   if (isRequest && requestActive) {
-    res.redirect("https://friendly-goat-kerchief.cyclic.app/user/resetpasswordform/" + uuidPwd);
+    res.redirect("https://expensetracker-ui.vercel.app/user/resetpasswordform/" + uuidPwd);
   }
 };
 
