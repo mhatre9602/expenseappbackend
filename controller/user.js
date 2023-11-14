@@ -118,7 +118,7 @@ const forgotPassword = async (req, res) => {
       sender,
       to: receivers,
       subject: "Reset password link",
-      textContent: `http://localhost:3001/user/password/resetpassword/${randomUUID}`,
+      textContent: `https://expensetracker-ui.vercel.app/user/password/resetpassword/${randomUUID}`,
     })
     .then(console.log("Link sent"))
     .catch((err) => {
@@ -136,7 +136,7 @@ const updatePasswordForm = async (req, res) => {
   console.log(userID);
   console.log(requestActive);
   if (isRequest && requestActive) {
-    res.redirect("http://localhost:3000/user/resetpasswordform/" + uuidPwd);
+    res.redirect("https://expensetracker-ui.vercel.app/user/resetpasswordform/" + uuidPwd);
   }
 };
 
